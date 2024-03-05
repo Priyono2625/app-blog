@@ -4,14 +4,21 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function seed() {
-  const email = "aguspriyono2625@gmail.com";
+  const email = "prio@a.com";
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
     // no worries if it doesn't exist yet
   });
 
-  const hashedPassword = await bcrypt.hash("Nurulhuda1!", 10);
+  const hashedPassword = await bcrypt.hash("12345678", 10);
+
+  const group = await prisma.group.create({
+    data: {
+      title: 'Superadmin',
+      description: 'Bisa mengatur seluruh tempat & filtur'
+    }
+  });
 
   const user = await prisma.user.create({
     data: {
@@ -21,10 +28,9 @@ async function seed() {
           hash: hashedPassword,
         },
       },
-      emailVerified: true,
-      display: 'Administrator',
-      type: 'Admin',
+      type: 'Superadmin',
       status: 'Active',
+      groupId: group.id
     },
   });
 

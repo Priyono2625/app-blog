@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { safeRedirect, validateEmail, validateUsername } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -24,12 +24,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email)) {
+  if (!validateEmail(email) || !validateUsername(email)) {
     return json(
-      { errors: { email: "Email is invalid", password: null } },
+      { errors: { email: "Email or Username is invalid", password: null } },
       { status: 400 },
     );
   }
+
+  // Mendapatkan akun sebelum email
+  const nemail = email.split('@')[0];
+
+  const username = (validateUsername(email) ? email : nemail)
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
@@ -45,7 +50,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
+  const user = await verifyLogin(email, username, password);
 
   if (!user) {
     return json(
@@ -98,7 +103,7 @@ export default function LoginPage() {
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus={true}
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"

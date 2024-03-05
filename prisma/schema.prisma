@@ -16,21 +16,19 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tags      Tag[]
-  users     User[]
-  activity  Activity[] @relation("GroupActivity")
+  users    User[]
+  activity Activity[] @relation("GroupActivity")
+  Tag      Tag?       @relation(fields: [tagId], references: [id])
+  tagId    String?
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-  emailVerified Boolean @default(false)
-  display       String?
-  type          String  @default("Standard")
-  status        String  @default("Pending")
-  tags          Tag[]
-
-  activity Activity[] @relation("UserActivity")
+  id       String  @id @default(cuid())
+  email    String  @unique
+  username String  @unique
+  name     String?
+  type     String  @default("Standard")
+  status   String  @default("Pending")
 
   password Password?
   notes    Note[]
@@ -40,6 +38,10 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  activity Activity[] @relation("UserActivity")
+  Tag      Tag?       @relation(fields: [tagId], references: [id])
+  tagId    String?
 }
 
 model Password {
@@ -80,8 +82,8 @@ model Tag {
   name String @unique
   type String @default("")
 
-  users     User[]
-  groups    Group[]
+  users  User[]
+  groups Group[]
 }
 
 model Queue {
