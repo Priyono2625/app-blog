@@ -13,24 +13,19 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("12345678", 10);
 
-  const group = await prisma.group.create({
-    data: {
-      title: 'Superadmin',
-      description: 'Bisa mengatur seluruh tempat & filtur'
-    }
-  });
-
   const user = await prisma.user.create({
     data: {
       email,
+      username: "Prio",
+      name: "Agus Priyono",
       password: {
         create: {
           hash: hashedPassword,
         },
       },
-      type: 'Superadmin',
-      status: 'Active',
-      groupId: group.id
+      type: "prio",
+      typename: "Superadmin",
+      status: "Active",
     },
   });
 
