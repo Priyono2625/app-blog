@@ -24,7 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email) || !validateUsername(email)) {
+  if (!validateEmail(email) && !validateUsername(email)) {
     return json(
       { errors: { email: "Email or Username is invalid", password: null } },
       { status: 400 },
@@ -32,9 +32,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   // Mendapatkan akun sebelum email
-  const nemail = email.split('@')[0];
+  const nemail = email.split("@")[0];
 
-  const username = (validateUsername(email) ? email : nemail)
+  const username = validateUsername(email) ? email : nemail;
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
@@ -72,7 +72,7 @@ export const meta: MetaFunction = () => [{ title: "Login" }];
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   // const redirectTo = searchParams.get("redirectTo") || "/notes";
-  const redirectTo = searchParams.get("redirectTo") || "/check";
+  const redirectTo = searchParams.get("redirectTo") || "/master";
   const actionData = useActionData<typeof action>();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);

@@ -83,7 +83,7 @@ export async function verifyLogin(
   password: Password["hash"],
 ) {
   const userWithPassword = await prisma.user.findFirst({
-    where: {OR: [{username},{email}]},
+    where: {OR: [{email},{username}]},
     include: {
       password: true,
     },
